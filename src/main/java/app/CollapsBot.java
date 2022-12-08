@@ -31,14 +31,32 @@ public class CollapsBot {
             }
         }
 
+        System.out.println("Total coins with usdt and busd pairs: " + coinsWithPair.size());
         for (String coin : coinsWithPair){
-            GetDepth.Response responseUsdt = api.getDepth().setSymbol(coin + "USDT").setLimit(10).submit();
-            GetDepth.Response responseBusd = api.getDepth().setSymbol(coin + "BUSD").setLimit(10).submit();
+            try{
+                GetDepth.Response responseUsdt = api.getDepth().setSymbol(coin + "USDT").setLimit(10).submit();
+                GetDepth.Response responseBusd = api.getDepth().setSymbol(coin + "BUSD").setLimit(10).submit();
 
-            System.out.println(coin);
-            System.out.println("USDT Best bid: " + responseUsdt.bids.get(0).get(0) + ", best ask: " + responseUsdt.asks.get(0).get(0));
-            System.out.println("BUSD Best bid: " + responseBusd.bids.get(0).get(0) + ", best ask: " + responseBusd.asks.get(0).get(0));
-            System.out.println("=====");
+//                System.out.println(coin);
+//                System.out.println("USDT Best bid: " + responseUsdt.bids.get(0).get(0) + ", best ask: " + responseUsdt.asks.get(0).get(0));
+//                System.out.println("BUSD Best bid: " + responseBusd.bids.get(0).get(0) + ", best ask: " + responseBusd.asks.get(0).get(0));
+                double delta1 = (responseUsdt.bids.get(0).get(0) / responseBusd.asks.get(0).get(0)) * 100 - 100;
+                double delta2 = (responseBusd.bids.get(0).get(0) / responseUsdt.asks.get(0).get(0)) * 100 - 100;
+                double maxDelta = Math.max(delta1, delta2);
+                if (maxDelta > 0.02) {
+
+                    System.out.println(coin);
+//                    System.out.println("USDT Best bid: " + responseUsdt.bids.get(0).get(0) + ", best ask: " + responseUsdt.asks.get(0).get(0));
+//                    System.out.println("BUSD Best bid: " + responseBusd.bids.get(0).get(0) + ", best ask: " + responseBusd.asks.get(0).get(0));
+                    System.out.println(maxDelta);
+                    System.out.println("=====");
+                }
+
+            }catch (Exception e){
+                System.out.println("Error with: " + coin);
+            }
         }
+
+
     }
 }
